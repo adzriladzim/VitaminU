@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import Navbar from '@/frontend/components/Navbar';
+import Card from './frontend/components/Card';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const labs = [
+    {
+      title: 'Lab Komputer 1',
+      description: 'Ruang 40 PC',
+      image: '/images/lab1.jpg',
+      status: 'booked' as const,
+    },
+    {
+      title: 'Lab Komputer 2',
+      description: 'Ruang 35 PC',
+      image: '/images/lab2.jpg',
+      status: 'in use' as const,
+    },
+    {
+      title: 'Lab Komputer 3',
+      description: 'Ruang 50 PC',
+      image: '/images/lab3.jpg',
+      status: 'available' as const,
+    },
+  ];
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="bg-gray-100 min-h-screen">
+      <Navbar />
+
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {labs.map((lab, i) => (
+            <Card
+              key={i}
+              title={lab.title}
+              description={lab.description}
+              image={lab.image}
+              status={lab.status}
+            />
+          ))}
+        </div>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
