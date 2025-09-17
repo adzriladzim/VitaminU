@@ -6,19 +6,19 @@ function App() {
     {
       title: 'Lab Komputer 1',
       description: 'Ruang 40 PC',
-      image: '/images/lab1.jpg',
+      image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       status: 'booked' as const,
     },
     {
       title: 'Lab Komputer 2',
       description: 'Ruang 35 PC',
-      image: '/images/lab2.jpg',
+      image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       status: 'in use' as const,
     },
     {
       title: 'Lab Komputer 3',
       description: 'Ruang 50 PC',
-      image: '/images/lab3.jpg',
+      image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       status: 'available' as const,
     },
   ];
