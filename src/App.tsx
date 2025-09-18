@@ -1,4 +1,5 @@
 import Navbar from '@/frontend/components/Navbar';
+import Hero from '@/frontend/components/Hero';
 import Card from './frontend/components/Card';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
   return (
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
+      <Hero />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
