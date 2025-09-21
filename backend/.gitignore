@@ -1,0 +1,21 @@
+# Rahasia (WAJIB)
+.env
+.env.*
+!.env.example
+
+# Virtual Environment
+venv/
+
+# Cache Python
+__pycache__/
+.pytest_cache/
+
+# Folder Log
+log/
+
+# File database lokal
+*.db
+*.sqlite3
+
+# File OS
+.DS_Store
