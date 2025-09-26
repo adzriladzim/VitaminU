@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Navbar from '@/components/ui/Navbar';
 import Hero from '@/components/ui/Hero';
 import Card from '@/components/ui/Card';
-import { labs, Lab } from '@/data/labs';
+import { labs } from '@/data/labs';
 
 const FILTERS = ['all', 'available', 'in use', 'booked'] as const;
 type FilterType = typeof FILTERS[number];
@@ -27,8 +27,8 @@ export default function Home() {
               key={f}
               onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition
-                ${filter === f 
-                  ? 'bg-cyan-600 text-white' 
+                ${filter === f
+                  ? 'bg-cyan-600 text-white'
                   : 'bg-white text-cyan-600 border border-cyan-600 hover:bg-cyan-50'}
               `}
             >
