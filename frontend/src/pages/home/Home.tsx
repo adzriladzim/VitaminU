@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Navbar from '@/components/ui/Navbar';
-import Hero from '@/components/ui/Hero';
-import Card from '@/components/ui/Card';
+import Navbar from '@/components/Navbar';
+import Hero from '@/components/Hero';
+import Card from '@/components/Card';
 import { labs } from '@/data/labs';
 
 const FILTERS = ['all', 'available', 'in use', 'booked'] as const;

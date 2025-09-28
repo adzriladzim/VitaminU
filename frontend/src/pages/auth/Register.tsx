@@ -1,7 +1,7 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import BackgroundImage from "../assets/bg.jpg";
+import BackgroundImage from "@/assets/bg.jpg";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 export default function Register() {
@@ -92,6 +92,7 @@ export default function Register() {
       </Button>
 
       <div className="bg-white/90 shadow-lg rounded-md p-8 w-full max-w-md relative z-40">
+        <img className="h-24 w-auto mx-auto" src="/vector.svg" alt="logo classify" />
         <h1 className="text-3xl text-center mt-8">
           Welcome to <span className="font-bold">Classify</span>
         </h1>
@@ -201,7 +202,7 @@ export default function Register() {
 
           <Button
             type="submit"
-            className="w-full bg-blue-600 text-white font-bold hover:bg-blue-800 mt-6"
+            className="w-full bg-cyan-600 text-white font-bold hover:bg-cyan-800 mt-6"
           >
             Register Account
           </Button>
@@ -210,7 +211,7 @@ export default function Register() {
             Already have an account?
             <a
               href="/login"
-              className="text-blue-400 font-bold hover:text-blue-600 ml-1"
+              className="text-cyan-600 font-bold hover:text-cyan-800 ml-1"
             >
               Login here
             </a>
