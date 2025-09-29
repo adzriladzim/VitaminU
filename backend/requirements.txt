@@ -1,0 +1,18 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary  # Atau driver database lain yang Anda gunakan
+alembic
+
+# Untuk password hashing
+passlib[bcrypt]
+
+# Untuk JWT (JSON Web Tokens)
+python-jose[cryptography]
+
+# Untuk memuat environment variables
+python-dotenv
+
+# Untuk validasi email, dll
+pydantic[email]
+python-multipart
