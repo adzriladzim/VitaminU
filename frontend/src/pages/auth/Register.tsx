@@ -97,7 +97,7 @@ export default function Register() {
           Welcome to <span className="font-bold">Classify</span>
         </h1>
         <p className="text-center">Create your account here</p>
-        <h2 className="text-2xl font-bold m-6 text-center">Register</h2>
+        <h2 className="text-2xl font-bold m-6 text-center">Register your account</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* NAME */}
