@@ -8,7 +8,7 @@ from ...core import security # Kita butuh 'get_current_user' untuk keamanan
 
 router = APIRouter(
     prefix="/classes",
-    tags=["Classes"]
+    tags=["Class"]
 )
 
 @router.get("/", response_model=List[schemas.ClassResponse])
