@@ -1,10 +1,24 @@
 from fastapi import FastAPI
-from .api.router import api_router # Impor router utama dari app/api/router.py
+from fastapi.middleware.cors import CORSMiddleware
+from .api.router import api_router
 
 app = FastAPI(
     title="Classify",
     description="API for booking and managing classroom sessions.",
     version="1.0.0"
+)
+
+origins = [
+    "http://localhost:5173", # Ganti dengan port frontend Anda jika berbeda (misal: 3000 untuk React)
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"], # Mengizinkan semua metode (GET, POST, dll.)
+    allow_headers=["*"], # Mengizinkan semua header
 )
 
 # Sertakan router utama yang sudah menggabungkan semua endpoint

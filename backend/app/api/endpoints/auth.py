@@ -5,8 +5,8 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 # Dummy users untuk login
 DUMMY_USERS = {
-    "khidhir@gmail.com": {"password": "admin123", "role": "admin"},
-    "ojan@gmail.com": {"password": "student123", "role": "student"},
+    "khidhir@admin.com": {"password": "!Admin123", "role": "admin"},
+    "ojan@gmail.com": {"password": "!Student123", "role": "student"},
 }
 
 class LoginRequest(BaseModel):

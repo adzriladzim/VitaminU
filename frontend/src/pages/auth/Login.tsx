@@ -77,7 +77,7 @@ export default function Login() {
       alert(`Login berhasil sebagai ${data.role}`);
 
       // Redirect ke dashboard sesuai role
-      window.location.href = data.role === "admin" ? "/admin" : "/student";
+      window.location.href = data.role === "admin" ? "/dashboard" : "/";
     } catch (err: any) {
       alert(err.message || "Terjadi kesalahan saat login");
     } finally {
