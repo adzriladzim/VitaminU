@@ -39,6 +39,11 @@ const Card: React.FC<CardProps> = ({ className, description, image, location, st
 
         <p className="text-gray-600 text-sm">{description}</p>
       </div>
+      <button className='w-full'>
+        <div className="p-4 border-t bg-cyan-600 hover:bg-cyan-800 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer text-center text-white font-bold">
+          Book now
+        </div>
+      </button>
     </div>
   );
 };

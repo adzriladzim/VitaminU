@@ -2,7 +2,7 @@ import { FC } from "react";
 
 const Footer: FC = () => {
   return (
-    <footer className="w-full mt-10 border-t bg-cyan-600 dark:bg-gray-900">
+    <footer className="w-full mt-10 bg-cyan-600 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
         {/* Brand / Logo */}
         <div className="text-lg font-semibold text-yellow-300 dark:text-gray-200">

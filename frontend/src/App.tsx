@@ -1,10 +1,19 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// Layouts
+import PublicLayout from "./layouts/PublicLayout";
+import DashboardLayout from "./layouts/DashboardLayout"; // Ganti ini dengan DashboardLayout Anda
+
+// Public Pages
 import Home from "@/pages/home/Home";
+import About from "@/pages/home/About";
+import Faq from "@/pages/home/Faq";
+
+// Auth Pages
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 
-// ===== Dashboard & Child Pages =====
-import Dashboard from "@/pages/Dashboard";
+// Dashboard Child Pages
 import AddClass from "@/pages/Dashboard/AddClass";
 import ManageClass from "@/pages/Dashboard/ManageClass";
 import Requests from "@/pages/Dashboard/Request";
@@ -13,13 +22,21 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Pages */}
-        <Route path="/" element={<Home />} />
+        {/* Rute untuk Halaman Publik dengan Layout yang Sama */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/faq" element={<Faq />} />
+        </Route>
+
+        {/* Rute untuk Halaman Autentikasi (tanpa Navbar/Footer) */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Admin Dashboard with Nested Routes */}
-        <Route path="/dashboard" element={<Dashboard />}>
+        {/* Rute untuk Halaman Dashboard */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          {/* Anda bisa menambahkan halaman index dashboard di sini jika ada */}
+          {/* <Route index element={<DashboardHome />} /> */}
           <Route path="add-class" element={<AddClass />} />
           <Route path="manage-class" element={<ManageClass />} />
           <Route path="requests" element={<Requests />} />
