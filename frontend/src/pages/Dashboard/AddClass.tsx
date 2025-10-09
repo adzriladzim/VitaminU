@@ -114,7 +114,7 @@ export default function AddClass() {
         {/* ... Komponen Select dan Button Submit tetap sama ... */}
         <Select
   value={classStatus}
-  onValue-Change={(value: string) => setClassStatus(value as ClassStatus)}
+  onValueChange={(value: string) => setClassStatus(value as ClassStatus)} // BENAR
 >
   <SelectTrigger className="w-full text-blue-500">
     <SelectValue placeholder="Select status" />
