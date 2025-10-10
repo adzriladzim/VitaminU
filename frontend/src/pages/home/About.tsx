@@ -28,8 +28,6 @@ export default function About() {
         </p>
       </main>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

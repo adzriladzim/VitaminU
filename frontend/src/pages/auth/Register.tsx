@@ -19,6 +19,7 @@ export default function Register() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
     let newErrors = { name: "", email: "", password: "", confirmPassword: "" };
@@ -66,15 +67,47 @@ export default function Register() {
     setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (validate()) {
-      console.log("Registration Data Valid:", form);
-      // TODO: API register
-    } else {
+    if (!validate()) {
       console.log("Validasi Registrasi Gagal.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:8000/users/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+        }),
+      });
+
+      if (response.status === 409) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Email sudah terdaftar.");
+      }
+
+      if (!response.ok) {
+        throw new Error("Registrasi gagal. Silakan coba lagi.");
+      }
+
+      await response.json();
+      alert("Registrasi berhasil! Silakan login dengan akun Anda.");
+      window.location.href = "/login";
+
+    } catch (error: any) {
+      alert(error.message || "Terjadi kesalahan saat registrasi.");
+    } finally {
+      setLoading(false);
     }
   };
+
 
   return (
     <div
@@ -202,9 +235,10 @@ export default function Register() {
 
           <Button
             type="submit"
+            disabled={loading}
             className="w-full bg-cyan-600 text-white font-bold hover:bg-cyan-800 mt-6"
           >
-            Register Account
+            {loading ? "Registering..." : "Register Account"}
           </Button>
 
           <div className="pt-2 text-center text-sm">

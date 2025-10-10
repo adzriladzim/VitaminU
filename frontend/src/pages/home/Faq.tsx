@@ -62,8 +62,6 @@ export default function Faq() {
           </AccordionItem>
         </Accordion>
       </main>
-
-      <Footer />
     </div>
   );
 }
