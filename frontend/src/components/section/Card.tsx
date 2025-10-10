@@ -15,6 +15,8 @@ const statusColor: Record<CardProps['status'], string> = {
 };
 
 const Card: React.FC<CardProps> = ({ className, description, image, location, status }) => {
+  const isButtonDisabled = status === 'booked' || status === 'in use';
+
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
       {image && (
@@ -39,11 +41,17 @@ const Card: React.FC<CardProps> = ({ className, description, image, location, st
 
         <p className="text-gray-600 text-sm">{description}</p>
       </div>
-      <button className='w-full'>
-        <div className="p-4 border-t bg-cyan-600 hover:bg-cyan-800 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer text-center text-white font-bold">
-          Book now
-        </div>
-      </button>
+      <button
+  disabled={isButtonDisabled}
+  className={`
+    w-full p-4 border-t text-center text-white font-bold
+    transition-colors duration-200
+    bg-cyan-600 hover:bg-cyan-700
+    disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-400
+  `}
+>
+  Book now
+</button>
     </div>
   );
 };
