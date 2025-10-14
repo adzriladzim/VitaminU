@@ -1,24 +1,24 @@
-from pydantic import BaseModel
-from datetime import date, time
+from pydantic import BaseModel, ConfigDict
+from datetime import datetime
 from typing import Optional
 from .user import UserResponse
-from .room import ClassResponse
-
-# Booking
+from .room import RoomResponse 
+from ..models.booking import BookingStatus
 class BookingBase(BaseModel):
-    class_id: int
-    user_id: int
-    date: date
-    time: time
+    room_id: int
+    start_time: datetime
+    end_time: datetime
 
 class BookingCreate(BookingBase):
     pass
 
+class BookingUpdate(BaseModel):
+    status: Optional[BookingStatus] = None
+
 class BookingResponse(BookingBase):
     id: int
-    user_id: int
-    status: str
-    user: UserResponse
-    class_ref: ClassResponse
-    class Config:
-        orm_mode = True
+    status: BookingStatus
+    owner: UserResponse
+    room: RoomResponse
+    
+    model_config = ConfigDict(from_attributes=True)

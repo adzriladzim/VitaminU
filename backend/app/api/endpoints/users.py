@@ -1,11 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-
-# Impor yang spesifik dan benar
-from ... import schemas
-from ...models import User  # Hanya butuh model User
-from ...core.database import get_db
-from ...core.security import get_password_hash # Butuh fungsi untuk hash password
+from backend.app import repository, schemas
+from backend.app.core.database import get_db
 
 router = APIRouter(
     prefix="/users",
@@ -19,26 +15,17 @@ def create_user(
 ):
     """
     Mendaftarkan user baru (Register).
+    Logika endpoint sekarang jauh lebih ringkas.
     """
-    # 1. Validasi: Cek apakah email sudah terdaftar
-    existing_user = db.query(User).filter(User.email == user_data.email).first()
+    # 1. Cek apakah user sudah ada dengan memanggil fungsi dari crud
+    existing_user = repository.users.get_user_by_email(db, email=user_data.email)
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Email already registered"
         )
-
-    # 2. Hash password sebelum disimpan ke database
-    hashed_password = get_password_hash(user_data.password)
-
-    # 3. Buat objek User baru
-    # Perhatikan: role tidak diatur di sini, default-nya adalah 'student'
-    new_user = User(
-        email=user_data.email,
-        hashed_password=hashed_password
-    )
+        
+    # 2. Buat user baru dengan memanggil fungsi dari crud
+    new_user = repository.users.create_user(db=db, user=user_data)
     
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
     return new_user

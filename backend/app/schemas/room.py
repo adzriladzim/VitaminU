@@ -1,18 +1,22 @@
-from pydantic import BaseModel
-from datetime import date, time
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
+from ..models.room import RoomStatus
 
-
-# Class
-class ClassBase(BaseModel):
+class RoomBase(BaseModel):
     name: str
-    building: str
-    description: Optional[str]
+    capacity: int
+    description: Optional[str] = None
 
-class ClassCreate(ClassBase):
+class RoomCreate(RoomBase):
     pass
 
-class ClassResponse(ClassBase):
+class RoomUpdate(RoomBase):
+    name: Optional[str] = None
+    capacity: Optional[int] = None
+    status: Optional[RoomStatus] = None
+
+class RoomResponse(RoomBase):
     id: int
-    class Config:
-        orm_mode = True
+    status: RoomStatus
+    
+    model_config = ConfigDict(from_attributes=True)

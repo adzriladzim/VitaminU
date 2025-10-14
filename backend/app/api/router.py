@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 # 1. Impor semua router dari folder endpoints
-from .endpoints import auth, users, rooms, bookings
+from backend.app.api.endpoints import auth, users, rooms, bookings
 
 # 2. Buat satu router utama dengan prefix global
 api_router = APIRouter()
