@@ -16,7 +16,6 @@ import Register from "@/pages/auth/Register";
 // Dashboard Child Pages
 import AddClass from "@/pages/Dashboard/AddClass";
 import ManageClass from "@/pages/Dashboard/ManageClass";
-import Requests from "@/pages/Dashboard/Request";
 import Overview from "@/pages/Dashboard/Overview";
 
 function App() {
@@ -39,7 +38,6 @@ function App() {
           <Route index element={<Overview />} />
           <Route path="add-class" element={<AddClass />} />
           <Route path="manage-class" element={<ManageClass />} />
-          <Route path="requests" element={<Requests />} />
         </Route>
       </Routes>
     </Router>
