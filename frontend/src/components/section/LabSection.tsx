@@ -13,7 +13,7 @@ export default function LabSection() {
     : labs.filter(l => l.status === filter);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-8">
+    <section className="max-w-7xl mx-auto px-4 py-8" id='LabSection'>
       {/* === Filter Buttons === */}
       <div className="flex flex-wrap justify-center gap-3 mb-6">
         {FILTERS.map(f => (

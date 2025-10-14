@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Layouts
 import PublicLayout from "./layouts/PublicLayout";
-import DashboardLayout from "./layouts/DashboardLayout"; // Ganti ini dengan DashboardLayout Anda
+import Dashboard from "@/pages/Dashboard";
 
 // Public Pages
 import Home from "@/pages/home/Home";
@@ -17,6 +17,7 @@ import Register from "@/pages/auth/Register";
 import AddClass from "@/pages/Dashboard/AddClass";
 import ManageClass from "@/pages/Dashboard/ManageClass";
 import Requests from "@/pages/Dashboard/Request";
+import Overview from "@/pages/Dashboard/Overview";
 
 function App() {
   return (
@@ -34,9 +35,8 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Rute untuk Halaman Dashboard */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          {/* Anda bisa menambahkan halaman index dashboard di sini jika ada */}
-          {/* <Route index element={<DashboardHome />} /> */}
+        <Route path="/dashboard" element={<Dashboard />}>
+          <Route index element={<Overview />} />
           <Route path="add-class" element={<AddClass />} />
           <Route path="manage-class" element={<ManageClass />} />
           <Route path="requests" element={<Requests />} />

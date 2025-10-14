@@ -60,7 +60,7 @@ const Navbar: React.FC = () => {
     px-4 py-2 rounded-lg font-semibold transition-all duration-300
     ${!isScrolled
                 ? "text-white border border-white hover:bg-white hover:text-cyan-600"
-                : "text-cyan-600 border-cyan-600 border hover:bg-cyan-100" // Teks cyan, border cyan, hover cyan terang
+                : "text-cyan-600 border-cyan-600 border hover:bg-cyan-100"
               }`}
           >
             Register
@@ -68,8 +68,13 @@ const Navbar: React.FC = () => {
 
           <Link
             to="/login"
-            className="px-4 py-2 bg-cyan-600 text-white font-bold rounded-md hover:bg-cyan-800 hover:text-white transition-colors duration-300"
-          > 
+            className={`
+    px-4 py-2 rounded-lg font-semibold transition-all duration-300
+    ${!isScrolled
+                ? "text-cyan-800 bg-white hover:bg-cyan-100 hover:text-cyan-800"
+                : "text-white bg-cyan-600 hover:bg-cyan-800"
+              }`}
+          >
             Login
           </Link>
         </div>
