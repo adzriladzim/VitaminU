@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import BackgroundImage from "@/assets/bg.jpg";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -67,6 +68,7 @@ export default function Register() {
     setForm({ ...form, [name]: value });
   };
 
+  const { login } = useAuth();
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) {
@@ -82,7 +84,7 @@ export default function Register() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: form.name,
+          full_name: form.name,
           email: form.email,
           password: form.password,
         }),
@@ -97,9 +99,37 @@ export default function Register() {
         throw new Error("Registrasi gagal. Silakan coba lagi.");
       }
 
-      await response.json();
-      alert("Registrasi berhasil! Silakan login dengan akun Anda.");
-      window.location.href = "/login";
+      // Automatically log in the user after registration
+      const loginRes = await fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, password: form.password }),
+      });
+
+      if (!loginRes.ok) {
+        throw new Error("Login gagal setelah registrasi.");
+      }
+
+      const loginData = await loginRes.json();
+
+      // Fetch user data
+      const userRes = await fetch("http://localhost:8000/users/me", {
+        headers: {
+          Authorization: `Bearer ${loginData.access_token}`,
+        },
+      });
+
+      if (!userRes.ok) {
+        throw new Error("Gagal mengambil data pengguna");
+      }
+
+      const user = await userRes.json();
+
+      // Call login function from useAuth
+      login(loginData.access_token, user);
+
+      alert("Registrasi berhasil! Anda sekarang sudah login.");
+      window.location.href = "/";
 
     } catch (error: any) {
       alert(error.message || "Terjadi kesalahan saat registrasi.");

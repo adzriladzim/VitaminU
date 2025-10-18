@@ -10,7 +10,9 @@ const HeroSection: React.FC = () => {
       {/* Konten Utama */}
       <div className="relative text-center max-w-2xl px-6">
         <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
-          Selamat Datang di <span className="text-yellow-300">Classify</span>
+          Selamat Datang di <span className="text-yellow-300">
+            Classify
+          </span>
         </h1>
         <p className="text-lg md:text-xl mb-6">
           Kelola dan booking ruang kelas dengan mudah. Temukan ruangan yang

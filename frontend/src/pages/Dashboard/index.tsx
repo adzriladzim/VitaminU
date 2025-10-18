@@ -32,7 +32,7 @@ export default function Dashboard() {
                   >
                     <Plus className="h-6 w-6" />
                     <span>Add Class</span>
-        
+
                   </NavLink>
           <NavLink
             to="manage-class"
@@ -45,18 +45,7 @@ export default function Dashboard() {
           >
             <Settings className="h-6 w-auto" /> <span>Manage Class</span>
           </NavLink>
-          <NavLink
-            to="requests"
-            className={({ isActive }) =>
-              `flex items-center justify-start gap-2
-     px-5 py-3 rounded-xl transition-all duration-200
-     font-medium hover:bg-cyan-500 ${isActive ? "bg-cyan-500" : ""
-              }`
-            }
-          >
-            <Mail className="h-6 w-auto" />
-            <span>Requests</span>
-          </NavLink>
+          
         </nav>
       </aside>
 

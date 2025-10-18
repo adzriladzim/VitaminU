@@ -1,7 +1,7 @@
 import { useClasses } from "../../hooks/useClasses";
 
 
-type ClassStatus = "Available" | "Booked" | "In Use" | "Pending";
+type ClassStatus = "Available" | "Booked" | "In Use";
 
 export default function ManageClass() {
   // Panggil hook untuk mendapatkan semua yang kita butuhkan dalam satu baris!
@@ -37,7 +37,7 @@ export default function ManageClass() {
                   <option value="Available">Available</option>
                   <option value="Booked">Booked</option>
                   <option value="In Use">In Use</option>
-                  <option value="Pending">Pending</option>
+
                 </select>
                 <div className="space-x-2">
                   <button onClick={() => handleSave(cls.id)} className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">

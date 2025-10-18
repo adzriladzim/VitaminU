@@ -6,7 +6,7 @@ const Footer: FC = () => {
       <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
         {/* Brand / Logo */}
         <div className="text-lg font-semibold text-yellow-300 dark:text-gray-200">
-          Classify
+          <img src="./vector.svg" alt="Logo classfy" className="h-8 w-auto"/>
         </div>
 
         {/* Navigation */}

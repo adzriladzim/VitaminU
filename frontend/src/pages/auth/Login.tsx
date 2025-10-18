@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import BackgroundImage from "@/assets/bg.jpg";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface LoginResponse {
   access_token: string;
@@ -53,6 +54,7 @@ export default function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const { login } = useAuth();
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
@@ -70,9 +72,22 @@ export default function Login() {
       }
 
       const data: LoginResponse = await res.json();
-      // Simpan token & role ke localStorage
-      localStorage.setItem("token", data.access_token);
-      localStorage.setItem("role", data.role);
+
+      // Fetch user data
+      const userRes = await fetch("http://localhost:8000/users/me", {
+        headers: {
+          Authorization: `Bearer ${data.access_token}`,
+        },
+      });
+
+      if (!userRes.ok) {
+        throw new Error("Gagal mengambil data pengguna");
+      }
+
+      const user = await userRes.json();
+
+      // Call login function from useAuth
+      login(data.access_token, user);
 
       alert(`Login berhasil sebagai ${data.role}`);
 
