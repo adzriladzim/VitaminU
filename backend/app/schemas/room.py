@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from ..models.room import RoomStatus
+from uuid import UUID
 
 class RoomBase(BaseModel):
     name: str
@@ -16,7 +17,7 @@ class RoomUpdate(RoomBase):
     status: Optional[RoomStatus] = None
 
 class RoomResponse(RoomBase):
-    id: int
+    id: UUID
     status: RoomStatus
     
     model_config = ConfigDict(from_attributes=True)

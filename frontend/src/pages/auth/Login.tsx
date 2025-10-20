@@ -17,7 +17,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Validasi input (Kode sudah benar)
+  const { login, error: apiError, setError: setApiError } = useAuth();
+
   const validate = () => {
     let newErrors = { email: "", password: "" };
     let isValid = true;
@@ -51,50 +52,19 @@ export default function Login() {
     if (errors[e.target.name as "email" | "password"]) {
       setErrors({ ...errors, [e.target.name]: "" });
     }
+    if (apiError) setApiError(""); // Reset error API
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const { login } = useAuth();
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
 
+    setLoading(true);
     try {
-      setLoading(true);
-      const res = await fetch("http://localhost:8000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      if (!res.ok) {
-        throw new Error("Login gagal, periksa email/password");
-      }
-
-      const data: LoginResponse = await res.json();
-
-      // Fetch user data
-      const userRes = await fetch("http://localhost:8000/users/me", {
-        headers: {
-          Authorization: `Bearer ${data.access_token}`,
-        },
-      });
-
-      if (!userRes.ok) {
-        throw new Error("Gagal mengambil data pengguna");
-      }
-
-      const user = await userRes.json();
-
-      // Call login function from useAuth
-      login(data.access_token, user);
-
-      alert(`Login berhasil sebagai ${data.role}`);
-
-      // Redirect ke dashboard sesuai role
-      window.location.href = data.role === "admin" ? "/dashboard" : "/";
+      await login(form.email, form.password);
     } catch (err: any) {
-      alert(err.message || "Terjadi kesalahan saat login");
+      console.error("Login gagal:", err.message);
     } finally {
       setLoading(false);
     }
@@ -179,8 +149,8 @@ export default function Login() {
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+          {apiError && (
+            <p className="text-red-500 text-sm mt-1">{apiError}</p>
           )}
 
           <p className="text-blue-400 cursor-pointer hover:text-blue-600">

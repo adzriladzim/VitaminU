@@ -4,8 +4,9 @@ from typing import Optional
 from .user import UserResponse
 from .room import RoomResponse 
 from ..models.booking import BookingStatus
+from uuid import UUID
 class BookingBase(BaseModel):
-    room_id: int
+    room_id: UUID
     start_time: datetime
     end_time: datetime
 
@@ -16,7 +17,7 @@ class BookingUpdate(BaseModel):
     status: Optional[BookingStatus] = None
 
 class BookingResponse(BookingBase):
-    id: int
+    id: UUID
     status: BookingStatus
     owner: UserResponse
     room: RoomResponse

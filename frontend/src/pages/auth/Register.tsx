@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import BackgroundImage from "@/assets/bg.jpg";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -21,6 +22,8 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { register, error: apiError, setError: setApiError } = useAuth();
 
   const validate = () => {
     let newErrors = { name: "", email: "", password: "", confirmPassword: "" };
@@ -60,15 +63,17 @@ export default function Register() {
     return isValid;
   };
 
+  // Fungsi untuk menangani perubahan input (sudah benar)
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (errors[name as keyof typeof errors]) {
       setErrors({ ...errors, [name]: "" });
     }
+    if (apiError) setApiError("");
+
     setForm({ ...form, [name]: value });
   };
 
-  const { login } = useAuth();
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) {
@@ -77,62 +82,13 @@ export default function Register() {
     }
 
     setLoading(true);
+    setApiError("");
+
     try {
-      const response = await fetch("http://localhost:8000/users/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          full_name: form.name,
-          email: form.email,
-          password: form.password,
-        }),
-      });
-
-      if (response.status === 409) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Email sudah terdaftar.");
-      }
-
-      if (!response.ok) {
-        throw new Error("Registrasi gagal. Silakan coba lagi.");
-      }
-
-      // Automatically log in the user after registration
-      const loginRes = await fetch("http://localhost:8000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email, password: form.password }),
-      });
-
-      if (!loginRes.ok) {
-        throw new Error("Login gagal setelah registrasi.");
-      }
-
-      const loginData = await loginRes.json();
-
-      // Fetch user data
-      const userRes = await fetch("http://localhost:8000/users/me", {
-        headers: {
-          Authorization: `Bearer ${loginData.access_token}`,
-        },
-      });
-
-      if (!userRes.ok) {
-        throw new Error("Gagal mengambil data pengguna");
-      }
-
-      const user = await userRes.json();
-
-      // Call login function from useAuth
-      login(loginData.access_token, user);
-
-      alert("Registrasi berhasil! Anda sekarang sudah login.");
-      window.location.href = "/";
+      await register(form.name, form.email, form.password);
 
     } catch (error: any) {
-      alert(error.message || "Terjadi kesalahan saat registrasi.");
+      console.error("Registrasi gagal:", error.message);
     } finally {
       setLoading(false);
     }
@@ -148,7 +104,7 @@ export default function Register() {
 
       <Button
         className="absolute top-4 left-4 bg-transparent hover:bg-white/20 z-30 size-16 rounded-md"
-        onClick={() => window.history.back()}
+        onClick={() => navigate(-1)}
         aria-label="Kembali"
       >
         <ArrowLeft className="!h-8 !w-8 text-white" />
@@ -262,6 +218,10 @@ export default function Register() {
               </p>
             )}
           </div>
+
+          {apiError && (
+            <p className="text-red-500 text-sm text-center">{apiError}</p>
+          )}
 
           <Button
             type="submit"

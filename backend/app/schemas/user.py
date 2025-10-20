@@ -1,11 +1,13 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
 from ..models import UserRole
+from uuid import UUID
 class UserBase(BaseModel):
     email: EmailStr
+    full_name: str
 class UserCreate(UserBase):
     password: str
 class UserResponse(UserBase):
-    id: int
+    id: UUID
     role: UserRole
 
     class Config:

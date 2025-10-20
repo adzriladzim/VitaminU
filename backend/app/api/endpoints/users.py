@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from backend.app import repository, schemas
+from typing import List
+from backend.app import repository, schemas, models
 from backend.app.core.database import get_db
+from backend.app.core.security import get_current_user
 
 router = APIRouter(
     prefix="/users",
@@ -29,3 +31,35 @@ def create_user(
     new_user = repository.users.create_user(db=db, user=user_data)
     
     return new_user
+
+@router.get("/me", response_model=schemas.UserResponse)
+def read_users_me(
+    current_user: models.User = Depends(get_current_user) # Tetap pakai models.User
+):
+    """
+    Mengambil data untuk user yang sedang login.
+    Endpoint ini tidak perlu memanggil repository,
+    karena dependency 'get_current_user' sudah melakukannya.
+    """
+    return current_user
+
+
+# --- Endpoint 3: GET Semua User (Hanya Admin) (BARU) ---
+@router.get("/", response_model=List[schemas.UserResponse])
+def read_all_users(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """
+    Mengambil daftar semua user. Hanya bisa diakses oleh admin.
+    """
+    # 1. Otorisasi: Cek apakah user adalah admin
+    if current_user.role != models.UserRole.admin: # Pastikan impor models.UserRole
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to access this resource."
+        )
+    
+    # 2. Panggil fungsi repository untuk mengambil semua user
+    users = repository.users.get_users(db=db)
+    return users
