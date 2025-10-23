@@ -1,19 +1,30 @@
 from sqlalchemy.orm import Session
 from ...app import models, schemas
+from uuid import UUID
 
 # Fungsi yang sudah ada (asumsi)
 def get_all_rooms(db: Session):
     return db.query(models.Room).all()
 
-def create_room(db: Session, room: schemas.RoomCreate):
-    db_room = models.Room(**room.dict())
+def create_room(db: Session, room: schemas.RoomCreate, image_url: str | None = None) -> models.Room:
+    """
+    Creates a new room in the database, including optional image URL.
+    """
+    db_room = models.Room(
+        name=room.name,
+        capacity=room.capacity,
+        description=room.description,
+        location=room.location,     
+        status=room.status,         
+        image_url=image_url
+    )
     db.add(db_room)
     db.commit()
     db.refresh(db_room)
     return db_room
 
 
-def get_room(db: Session, room_id: int):
+def get_room(db: Session, room_id: UUID):
     """Mengambil satu ruangan berdasarkan ID."""
     return db.query(models.Room).filter(models.Room.id == room_id).first()
 
@@ -35,7 +46,7 @@ def update_room(db: Session, db_obj: models.Room, obj_in: schemas.RoomUpdate):
     db.refresh(db_obj)
     return db_obj
 
-def delete_room(db: Session, room_id: int):
+def delete_room(db: Session, room_id: UUID):
     """Menghapus ruangan berdasarkan ID."""
     db_obj = db.query(models.Room).filter(models.Room.id == room_id).first()
     if db_obj:
