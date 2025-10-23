@@ -21,11 +21,7 @@ BCRYPT_MAX_BYTES = 72
 # ==============================
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """
-    Memverifikasi password mentah (plain_password) dengan hash di database.
-    bcrypt.checkpw() hanya menerima bytes, jadi harus di-encode dulu.
-    """
-    # Potong password jika lebih dari 72 byte (batas bcrypt)
+
     truncated_password = plain_password[:BCRYPT_MAX_BYTES]
 
     # Convert string ke bytes sebelum dicek
@@ -47,14 +43,9 @@ def get_password_hash(password: str) -> str:
     hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed.decode('utf-8')
 
-# ==============================
-# FUNGSI TOKEN
-# ==============================
 
 def create_access_token(data: dict) -> str:
-    """
-    Membuat JWT access token.
-    """
+
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
@@ -66,19 +57,12 @@ def create_access_token(data: dict) -> str:
     )
     return encoded_jwt
 
-# ==============================
-# FUNGSI AUTENTIKASI USER
-# ==============================
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ) -> models.User:
-    """
-    Membaca token, memvalidasinya, dan mengambil data user dari database.
-    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -107,9 +91,7 @@ def get_current_user(
 def get_current_admin_user(
     current_user: models.User = Depends(get_current_user)
 ) -> models.User:
-    """
-    Memastikan user yang login adalah admin.
-    """
+
     if current_user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

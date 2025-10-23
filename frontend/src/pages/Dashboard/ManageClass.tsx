@@ -12,7 +12,7 @@ import {
 type ClassStatus = "Available" | "Booked" | "In Use";
 
 export default function ManageClass() {
-  // Panggil hook untuk mendapatkan semua yang kita butuhkan dalam satu baris!
+  // Panggil hook untuk mendapatkan semua yang kita butuhkan
   const {
     classes,
     editingId,
@@ -22,11 +22,52 @@ export default function ManageClass() {
     handleEditClick,
     handleCancel,
     handleSave,
+    handleFinish,
   } = useClasses();
+
+
+  const inUseClasses = classes.filter((cls) => cls.status === "In Use");
 
   return (
     <div className="bg-white shadow-md rounded-xl p-6">
       <h1 className="text-2xl font-bold mb-6 text-teal-700">Manage Classes</h1>
+
+      <div className="mt-4 mb-10 p-5 border border-gray-200 rounded-xl bg-yellow-50">
+        <h2 className="text-2xl font-bold mb-4 text-cyan-600 border-b pb-2">
+          Classes Currently In Use ({inUseClasses.length})
+        </h2>
+
+        {inUseClasses.length === 0 ? (
+          <p className="text-gray-500 italic">No classes are currently in use.</p>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-4">
+            {inUseClasses.map((cls) => (
+              <div
+                key={cls.id}
+                className="border-l-4 border-green-500 rounded-lg p-4 bg-white shadow-sm"
+              >
+                <h3 className="font-bold text-xl mb-1 text-orange-800">
+                  {cls.name}
+                </h3>
+                <p className="text-sm text-gray-700 mb-3">
+                  Status: <span className="font-semibold">{cls.status}</span>
+                </p>
+                <button
+                  onClick={() => handleFinish(cls.id)}
+                  className="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-green-600 transition-colors"
+                >
+                  Mark as Finished & Set to Available
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ============================== */}
+      {/* 📦 BAGIAN SEMUA KELAS (ALL CLASSES) */}
+      {/* ============================== */}
+      <h2 className="text-2xl font-bold mb-4 text-teal-700">All Class Status</h2>
       <div className="grid md:grid-cols-2 gap-4 mb-8">
         {classes.map((cls) => (
           <div
@@ -93,6 +134,9 @@ export default function ManageClass() {
         ))}
       </div>
 
+      {/* ============================== */}
+      {/* 📜 BAGIAN LOG BOOKING PENGGUNA (USER BOOKING LOG) */}
+      {/* ============================== */}
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">User Booking Log</h2>
         <div className="border border-gray-200 rounded-lg overflow-hidden">
