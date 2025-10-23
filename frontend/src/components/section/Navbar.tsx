@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,12 +7,26 @@ const Navbar: React.FC = () => {
   const { isLoggedIn, user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node) && isProfileDropdownOpen) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isProfileDropdownOpen]);
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -57,18 +71,29 @@ const Navbar: React.FC = () => {
         {/* Tombol Login (Desktop) */}
         <div className="hidden md:flex items-center space-x-4">
           {isLoggedIn ? (
-            <div className="relative">
-              <button className="flex items-center space-x-2">
-                <span className="font-semibold text-cyan-600">{user?.full_name}</span>
+            <div className="relative" ref={profileRef}>
+              <button 
+                className="flex items-center space-x-2 focus:outline-none"
+                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+              >
+                <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-white font-semibold">
+                  {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+                <span className="font-semibold text-cyan-600 hidden sm:block">{user?.full_name}</span>
               </button>
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
-                <button
-                  onClick={logout}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Logout
-                </button>
-              </div>
+              {isProfileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsProfileDropdownOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <>
@@ -130,12 +155,20 @@ const Navbar: React.FC = () => {
 
           <div className="flex flex-col gap-2 w-full">
             {isLoggedIn ? (
-              <button
-                onClick={logout}
-                className="w-full text-center bg-white text-cyan-600 font-semibold px-5 py-2 rounded-md hover:bg-cyan-500 hover:text-white transition-all duration-300"
-              >
-                Logout
-              </button>
+              <div className="w-full text-center bg-white text-cyan-600 font-semibold px-5 py-2 rounded-md">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-white font-semibold">
+                    {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                  <span className="font-semibold">{user?.full_name}</span>
+                </div>
+                <button
+                  onClick={logout}
+                  className="w-full mt-2 text-left bg-cyan-50 text-cyan-600 font-medium px-3 py-1.5 rounded-md hover:bg-cyan-100 transition-all duration-300"
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <>
                 <Link

@@ -9,7 +9,8 @@ app = FastAPI(
 )
 
 origins = [
-    "http://localhost:5173", # Ganti dengan port frontend Anda jika berbeda (misal: 3000 untuk React)
+    "http://localhost:5173",
+     "http://127.0.0.1:5173", # Ganti dengan port frontend Anda jika berbeda (misal: 3000 untuk React)
     "http://localhost:3000",
 ]
 
@@ -19,6 +20,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"], # Mengizinkan semua metode (GET, POST, dll.)
     allow_headers=["*"], # Mengizinkan semua header
+    expose_headers=["Authorization"]
 )
 
 # Sertakan router utama yang sudah menggabungkan semua endpoint
@@ -26,7 +28,4 @@ app.include_router(api_router)
 
 @app.get("/health", tags=["Health Check"])
 def health_check():
-    """
-    Endpoint sederhana untuk memeriksa apakah API sedang berjalan.
-    """
     return {"status": "ok"}

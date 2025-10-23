@@ -63,7 +63,12 @@ def update_room_details(
     Memperbarui detail ruangan (misal: nama atau status).
     Hanya bisa dilakukan oleh admin.
     """
-    db_room = get_room_by_id(room_id, db, current_admin)
+    db_room = repository.rooms.get_room(db, room_id=room_id)
+    if db_room is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Room not found"
+        )
     
     if room_update.name and room_update.name != db_room.name:
         existing_room = repository.rooms.get_room_by_name(db, name=room_update.name)

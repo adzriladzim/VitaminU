@@ -1,13 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from backend.app import schemas, repository
+from backend.app import repository
 from backend.app.core import security
 from backend.app.core.database import get_db
+from pydantic import BaseModel
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
 
 router = APIRouter(tags=["Authentication"])
 
-@router.post("/login", response_model=schemas.auth.Token) # Gunakan skema yang baru dibuat
+
+@router.post("/login", response_model=Token)
 def login_for_access_token(
     db: Session = Depends(get_db),
     form_data: OAuth2PasswordRequestForm = Depends()
@@ -18,7 +26,7 @@ def login_for_access_token(
     """
     # 1. Cari user di database berdasarkan email
     user = repository.users.get_user_by_email(db, email=form_data.username)
-    
+
     # 2. Jika user tidak ada ATAU password salah, kirim error
     if not user or not security.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
@@ -26,9 +34,8 @@ def login_for_access_token(
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-        
+
     # 3. Jika berhasil, buat token
-    # Token hanya berisi identifier unik (email), bukan role
     access_token = security.create_access_token(data={"sub": user.email})
-    
+
     return {"access_token": access_token, "token_type": "bearer"}
