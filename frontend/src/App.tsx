@@ -1,4 +1,5 @@
 import { Router, Routes, Route } from "react-router-dom";
+import { ClassDataProvider } from "./context/ClassDataContext";
 
 // Layouts
 import PublicLayout from "./layouts/PublicLayout";
@@ -20,25 +21,27 @@ import Overview from "@/pages/Dashboard/Overview";
 
 function App() {
   return (
-    <Routes>
-      {/* Rute untuk Halaman Publik dengan Layout yang Sama */}
-      <Route element={<PublicLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/faq" element={<Faq />} />
-      </Route>
+    <ClassDataProvider>
+      <Routes>
+        {/* Rute untuk Halaman Publik dengan Layout yang Sama */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/faq" element={<Faq />} />
+        </Route>
 
-      {/* Rute untuk Halaman Autentikasi (tanpa Navbar/Footer) */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+        {/* Rute untuk Halaman Autentikasi (tanpa Navbar/Footer) */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-      {/* Rute untuk Halaman Dashboard */}
-      <Route path="/dashboard" element={<Dashboard />}>
-        <Route index element={<Overview />} />
-        <Route path="add-class" element={<AddClass />} />
-        <Route path="manage-class" element={<ManageClass />} />
-      </Route>
-    </Routes>
+        {/* Rute untuk Halaman Dashboard */}
+        <Route path="/dashboard" element={<Dashboard />}>
+          <Route index element={<Overview />} />
+          <Route path="add-class" element={<AddClass />} />
+          <Route path="manage-class" element={<ManageClass />} />
+        </Route>
+      </Routes>
+    </ClassDataProvider>
   );
 }
 
