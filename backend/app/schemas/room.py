@@ -1,7 +1,18 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
-from ..models.room import RoomStatus
+from typing import Optional, Literal
+# from ..models.room import RoomStatus
 from uuid import UUID
+
+RoomStatus = Literal[
+    "available",
+    "in_use",
+    "maintenance",
+    "pending",
+    "approved",
+    "rejected",
+    "canceled",
+    "booked" # Sesuaikan daftar ini
+]
 
 class RoomBase(BaseModel):
     name: str

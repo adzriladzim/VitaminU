@@ -14,7 +14,6 @@ router = APIRouter(
 )
 
 UPLOAD_DIRECTORY = "./static/images/rooms" 
-# Pastikan folder static/images/rooms ada di root backend Anda
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 @router.post("/", response_model=schemas.RoomResponse, status_code=status.HTTP_201_CREATED)
@@ -75,7 +74,8 @@ def get_all_rooms(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(dependencies.get_current_user)
 ):
-    return repository.rooms.get_all_rooms(db)
+    rooms = repository.rooms.get_all_rooms(db)
+    return rooms
 
 
 @router.get("/{room_id}", response_model=schemas.RoomResponse)
