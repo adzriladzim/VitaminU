@@ -8,6 +8,7 @@ from backend.app.repository import bookings as repository
 from backend.app.models import Booking, Room, User, BookingStatus
 from backend.app.core.database import get_db
 from backend.app.core import security
+from uuid import uuid4, UUID
 
 router = APIRouter(
     prefix="/bookings",
@@ -49,7 +50,7 @@ def read_all_bookings(
 
 @router.put("/{booking_id}/status", response_model=schemas.BookingResponse)
 def update_a_booking_status(
-    booking_id: int,
+    booking_id: UUID,
     booking_update: schemas.BookingUpdate,
     db: Session = Depends(get_db),
     current_admin: models.User = Depends(dependencies.get_current_admin_user)

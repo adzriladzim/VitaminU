@@ -13,10 +13,9 @@ class BookingStatus(str, enum.Enum):
 
 class Booking(Base):
     __tablename__ = "bookings"
-    
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    start_time = Column(DateTime, nullable=False)
-    end_time = Column(DateTime, nullable=False)
+    start_time = Column(DateTime(timezone=True), nullable=False)
+    end_time = Column(DateTime(timezone=True), nullable=False)
     status = Column(Enum(BookingStatus), nullable=False, default=BookingStatus.pending)
     
     # Foreign Keys dan Relationships

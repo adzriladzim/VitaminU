@@ -13,7 +13,7 @@ export interface BookingCreatePayload {
   room_id: string;
   start_time: string;
   end_time: string;
-  status?: string
+  status?: 'pending' | 'approved' | 'rejected' | 'canceled';
 }
 
 export interface User {
@@ -21,4 +21,21 @@ export interface User {
   email: string;
   full_name: string;
   role: 'admin' | 'student';
+}
+
+export interface Booking {
+  id: string; 
+  start_time: string;
+  end_time: string;
+  status: 'pending' | 'approved' | 'rejected' | 'canceled';
+  owner: {
+    id: string;
+    email: string;
+    full_name: string;
+    role: 'admin' | 'student';
+  };
+  room: {
+    id: string;
+    name: string;
+  };
 }

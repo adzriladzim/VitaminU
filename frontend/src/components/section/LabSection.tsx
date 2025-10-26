@@ -74,7 +74,6 @@ export default function LabSection() {
         room_id: roomId,
         start_time: startTime,
         end_time: endTime,
-        status: "pending",
       };
       await apiClient.post("/bookings/", bookingPayload);
 
