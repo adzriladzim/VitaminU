@@ -143,7 +143,7 @@ export default function AddClass() {
         {/* ... Input lainnya tetap sama ... */}
         <Input
           id="name"
-          placeholder="Lab Computer"
+          placeholder="Class Name"
           value={name}
           onChange={(e) => {
             setName(e.target.value);
@@ -166,7 +166,7 @@ export default function AddClass() {
         )}
         <Input
           id="location"
-          placeholder="Gedung Kemang, Lt. 2"
+          placeholder="Class Location (e.g., Building A, Room 101)"
           value={location}
           onChange={(e) => {
             setLocation(e.target.value);
@@ -180,7 +180,7 @@ export default function AddClass() {
         <Input
           id="capacity"
           type="number"
-          placeholder="30"
+          placeholder="Class Capacity (e.g., 30)"
           value={capacity}
           onChange={(e) => {
             setCapacity(e.target.value);
