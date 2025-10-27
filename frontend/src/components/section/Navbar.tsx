@@ -76,15 +76,13 @@ const Navbar: React.FC = () => {
               <li key={item.name}>
                 <Link
                   to={item.path}
-                  className={`transition-colors duration-300 relative group text-sm tracking-wider
+                  className={`transition-colors font-semibold duration-300 relative group text-sm tracking-wider
                     ${isScrolled
-                      ? "text-gray-700 hover:text-cyan-600 font-medium"
+                      ? "text-cyan-600 hover:text-cyan-800 font-medium"
                       : "text-white hover:text-cyan-100 font-medium"
                     }`}
                 >
                   {item.name}
-                  {/* Underline effect */}
-                  <span className={`absolute bottom-[-5px] left-0 w-full h-[3px] bg-cyan-500 transition-transform duration-300 transform scale-x-0 group-hover:scale-x-100 rounded-full ${!isScrolled ? 'bg-white' : 'bg-cyan-500'}`}></span>
                 </Link>
               </li>
             ))}
@@ -95,10 +93,10 @@ const Navbar: React.FC = () => {
             {isLoggedIn ? (
               <div className="relative" ref={profileRef}>
                 <button
-                  className={`flex items-center space-x-2 p-2 rounded-full focus:outline-none transition-all duration-300 ${isScrolled ? "bg-gray-100 hover:bg-gray-200" : "bg-white/10 hover:bg-white/20 text-white"}`}
+                  className={`flex items-center space-x-2 p-2 rounded-md focus:outline-none transition-all duration-300 ${isScrolled ? "bg-gray-100 hover:bg-gray-200" : "bg-white/10 hover:bg-white/20 text-white"}`}
                   onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                 >
-                  <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-white font-semibold shadow-md">
+                  <div className="w-8 h-8 rounded-md bg-cyan-500 flex items-center justify-center text-white font-semibold shadow-md">
                     {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                   <span className={`font-semibold hidden sm:block transition-colors duration-300 ${isScrolled ? "text-cyan-700" : "text-white"}`}>
@@ -107,7 +105,7 @@ const Navbar: React.FC = () => {
                   <ChevronDown size={18} className={`transition-transform duration-300 ${isProfileDropdownOpen ? 'rotate-180' : 'rotate-0'} ${isScrolled ? "text-cyan-600" : "text-white"}`} />
                 </button>
                 {isProfileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl overflow-hidden py-1 z-50 animate-in fade-in-0 slide-in-from-top-1">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounde-md shadow-2xl overflow-hidden py-1 z-50 animate-in fade-in-0 slide-in-from-top-1">
                     <button
                       onClick={handleLogout}
                       className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
@@ -123,7 +121,7 @@ const Navbar: React.FC = () => {
                 <Link
                   to="/register"
                   className={`
-                    px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-md
+                    px-5 py-2 rounded-md text-sm font-semibold transition-all duration-300 shadow-md
                     ${!isScrolled
                       ? "text-white border border-white hover:bg-white hover:text-cyan-600"
                       : "text-cyan-600 border border-cyan-600 hover:bg-cyan-50"
@@ -134,7 +132,7 @@ const Navbar: React.FC = () => {
                 <Link
                   to="/login"
                   className={`
-                    px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-md
+                    px-5 py-2 rounded-md text-sm font-semibold transition-all duration-300 shadow-md
                     ${!isScrolled
                       ? "text-cyan-800 bg-white hover:bg-cyan-100"
                       : "text-white bg-cyan-600 hover:bg-cyan-700"
@@ -178,16 +176,16 @@ const Navbar: React.FC = () => {
 
           <div className="flex flex-col gap-4 w-full mt-10 p-4 border-t border-cyan-500/50">
             {isLoggedIn ? (
-              <div className="w-full text-center bg-white rounded-xl shadow-lg p-4">
+              <div className="w-full text-center bg-white rounded-md shadow-lg p-4">
                 <div className="flex items-center justify-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                  <div className="w-10 h-10 rounded-md bg-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-md">
                     {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                   <span className="font-bold text-cyan-700 text-lg">{user?.full_name}</span>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full mt-4 flex items-center justify-center space-x-2 bg-red-50 text-red-600 font-medium px-3 py-2 rounded-lg hover:bg-red-100 transition-all duration-300"
+                  className="w-full mt-4 flex items-center justify-center space-x-2 bg-red-50 text-red-600 font-medium px-3 py-2 rounded-md hover:bg-red-100 transition-all duration-300"
                 >
                   <LogOut size={20} />
                   <span>Logout</span>
@@ -197,14 +195,14 @@ const Navbar: React.FC = () => {
               <>
                 <Link
                   to="/login"
-                  className="w-full text-center bg-white text-cyan-600 font-bold px-5 py-3 rounded-full shadow-lg hover:bg-cyan-500 hover:text-white transition-all duration-300"
+                  className="w-full text-center bg-white text-cyan-600 font-bold px-5 py-3 rounded-md shadow-lg hover:bg-cyan-500 hover:text-white transition-all duration-300"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="w-full text-center border-2 border-white text-white font-bold px-5 py-3 rounded-full shadow-lg hover:bg-white hover:text-cyan-600 transition-all duration-300"
+                  className="w-full text-center border-2 border-white text-white font-bold px-5 py-3 rounded-md shadow-lg hover:bg-white hover:text-cyan-600 transition-all duration-300"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Register

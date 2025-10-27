@@ -164,7 +164,7 @@ export default function LabSection() {
               <button
                 key={f.value}
                 onClick={() => setFilter(f.value)}
-                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 transform hover:scale-105
+                className={`px-6 py-2.5 rounded-md text-sm font-semibold transition-all duration-300 transform hover:scale-105
                         ${
                           filter === f.value
                             ? "bg-cyan-600 text-white shadow-lg shadow-cyan-600/30"
@@ -220,7 +220,7 @@ export default function LabSection() {
               return (
                 <Card
                   key={room.id}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 bg-white border-0 transform hover:-translate-y-2"
+                  className="group relative flex flex-col overflow-hidden rounded-md shadow-lg hover:shadow-2xl transition-all duration-500 bg-white border-0 transform hover:-translate-y-2"
                 >
                   {/* Image Section with Overlay */}
                   {room.image_url && (
@@ -240,7 +240,7 @@ export default function LabSection() {
                       {/* Status Badge on Image */}
                       <div className="absolute top-4 right-4">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold shadow-lg ${statusColor} backdrop-blur-sm`}
+                          className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-bold shadow-lg ${statusColor} backdrop-blur-sm`}
                         >
                           {statusText.toUpperCase()}
                         </span>
@@ -344,7 +344,7 @@ export default function LabSection() {
                           }
                         }}
                         // Logika disabled dan className disederhanakan
-                        className={`w-full py-3.5 rounded-xl font-bold text-base transition-all duration-300 transform
+                        className={`w-full py-3.5 rounded-md font-bold text-base transition-all duration-300 transform
                            bg-cyan-600 text-white hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 hover:scale-105 active:scale-95
                         `}
                       >
@@ -372,7 +372,7 @@ export default function LabSection() {
                       </div>
                     )}
                   </CardFooter>
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-400/10 to-transparent rounded-bl-full"></div>
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-400/10 to-transparent rounded-bl-md"></div>
                 </Card>
               );
             })}
