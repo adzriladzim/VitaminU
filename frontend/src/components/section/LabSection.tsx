@@ -91,7 +91,7 @@ export default function LabSection() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 transform hover:scale-105
+              className={`px-6 py-2.5 rounded-md text-sm font-semibold transition-all duration-300 transform hover:scale-105
                                 ${filter === f
                   ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-600/30'
                   : 'bg-white text-cyan-600 border-2 border-cyan-600 hover:bg-cyan-50 shadow-sm'}`}
@@ -133,7 +133,7 @@ export default function LabSection() {
             return (
               <Card
                 key={lab.id}
-                className="group relative flex flex-col overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 bg-white border-0 transform hover:-translate-y-2"
+                className="group relative flex flex-col overflow-hidden rounded-md shadow-lg hover:shadow-2xl transition-all duration-500 bg-white border-0 transform hover:-translate-y-2"
               >
                 {/* Image Section with Overlay */}
                 {lab.image && (
@@ -147,7 +147,7 @@ export default function LabSection() {
 
                     {/* Status Badge on Image */}
                     <div className="absolute top-4 right-4">
-                      <span className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold shadow-lg ${statusColor} backdrop-blur-sm`}>
+                      <span className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-bold shadow-lg ${statusColor} backdrop-blur-sm`}>
 
                         <span>{statusText}</span>
                       </span>
@@ -203,7 +203,7 @@ export default function LabSection() {
                     <button
                       onClick={() => handleBookClick(lab.id, lab.name)}
                       disabled={!isLoggedIn}
-                      className={`w-full py-3.5 rounded-xl font-bold text-base transition-all duration-300 transform
+                      className={`w-full py-3.5 rounded-md font-bold text-base transition-all duration-300 transform
                                                 ${isLoggedIn
                           ? 'bg-cyan-600 text-white hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 hover:scale-105 active:scale-95'
                           : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`
@@ -235,7 +235,7 @@ export default function LabSection() {
                 </CardFooter>
 
                 {/* Decorative Corner */}
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-400/10 to-transparent rounded-bl-full"></div>
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-400/10 to-transparent rounded-bl-md"></div>
               </Card>
             );
           })}

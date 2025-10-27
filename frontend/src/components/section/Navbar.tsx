@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, LogOut, ChevronDown } from "lucide-react"; // Menambahkan ChevronDown dan LogOut
+import { Menu, X, LogOut, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -11,12 +11,11 @@ const Navbar: React.FC = () => {
   const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50); // Menambah threshold scroll
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close profile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -27,20 +26,13 @@ const Navbar: React.FC = () => {
         setIsProfileDropdownOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isProfileDropdownOpen]);
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    document.body.style.overflow = isMenuOpen ? "hidden" : "unset";
   }, [isMenuOpen]);
-
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -52,68 +44,83 @@ const Navbar: React.FC = () => {
     logout();
     setIsProfileDropdownOpen(false);
     setIsMenuOpen(false);
-  }
+  };
 
   return (
     <>
+      {/* NAVBAR */}
       <nav
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-white shadow-xl" : "bg-cyan-600/95 backdrop-blur-sm"
-          }`}
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+          isScrolled ? "bg-white shadow-xl" : "bg-cyan-600/95 backdrop-blur-sm"
+        }`}
       >
         <div className="relative max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           {/* Logo */}
-          <Link
-            to="/"
-            className={`text-xl font-bold tracking-wide transition-colors duration-300 ${isScrolled ? "text-cyan-600" : "text-white"
+          <Link to="/">
+            <img
+              src="./vector.svg"
+              alt="Logo"
+              className={`h-8 w-auto transition-transform duration-300 ${
+                isScrolled ? "scale-90" : "scale-100"
               }`}
-          >
-            <img src="./vector.svg" alt="Logo classfy" className={`h-8 w-auto transition-transform duration-300 ${isScrolled ? "scale-90" : "scale-100"}`} />
+            />
           </Link>
 
           {/* Menu Tengah (Desktop) */}
-          <ul className="hidden md:flex space-x-10 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <ul className="hidden md:flex space-x-10">
             {navItems.map((item) => (
               <li key={item.name}>
                 <Link
                   to={item.path}
-                  className={`transition-colors duration-300 relative group text-sm tracking-wider
-                    ${isScrolled
-                      ? "text-gray-700 hover:text-cyan-600 font-medium"
-                      : "text-white hover:text-cyan-100 font-medium"
-                    }`}
+                  className={`relative group text-sm font-medium tracking-wide transition-colors ${
+                    isScrolled
+                      ? "text-cyan-400 font-semibold hover:text-cyan-600"
+                      : "text-white font-semibold hover:text-cyan-100"
+                  }`}
                 >
                   {item.name}
-                  {/* Underline effect */}
-                  <span className={`absolute bottom-[-5px] left-0 w-full h-[3px] bg-cyan-500 transition-transform duration-300 transform scale-x-0 group-hover:scale-x-100 rounded-full ${!isScrolled ? 'bg-white' : 'bg-cyan-500'}`}></span>
+
                 </Link>
               </li>
             ))}
           </ul>
 
-          {/* Tombol Login/Profil (Desktop) */}
+          {/* Desktop Profile/Login */}
           <div className="hidden md:flex items-center space-x-4">
             {isLoggedIn ? (
               <div className="relative" ref={profileRef}>
                 <button
-                  className={`flex items-center space-x-2 p-2 rounded-full focus:outline-none transition-all duration-300 ${isScrolled ? "bg-gray-100 hover:bg-gray-200" : "bg-white/10 hover:bg-white/20 text-white"}`}
-                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                  onClick={() =>
+                    setIsProfileDropdownOpen(!isProfileDropdownOpen)
+                  }
+                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-300 ${
+                    isScrolled
+                      ? "bg-gray-100 hover:bg-gray-200 text-cyan-700"
+                      : "bg-white/10 hover:bg-white/20 text-white"
+                  }`}
                 >
-                  <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-white font-semibold shadow-md">
-                    {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
+                  <div className="w-8 h-8 bg-cyan-500 rounded-md flex items-center justify-center font-semibold shadow-md">
+                    {user?.full_name?.charAt(0)?.toUpperCase() || "U"}
                   </div>
-                  <span className={`font-semibold hidden sm:block transition-colors duration-300 ${isScrolled ? "text-cyan-700" : "text-white"}`}>
+                  <span className="hidden sm:block font-medium">
                     {user?.full_name}
                   </span>
-                  <ChevronDown size={18} className={`transition-transform duration-300 ${isProfileDropdownOpen ? 'rotate-180' : 'rotate-0'} ${isScrolled ? "text-cyan-600" : "text-white"}`} />
+                  <ChevronDown
+                    size={18}
+                    className={`transition-transform ${
+                      isProfileDropdownOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                  />
                 </button>
+
                 {isProfileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl overflow-hidden py-1 z-50 animate-in fade-in-0 slide-in-from-top-1">
+                  <div className="absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-md overflow-hidden">
                     <button
                       onClick={handleLogout}
-                      className="flex items-center space-x-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+                      className="flex items-center gap-2 w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 text-sm"
                     >
                       <LogOut size={16} />
-                      <span>Logout</span>
+                      Logout
                     </button>
                   </div>
                 )}
@@ -122,23 +129,21 @@ const Navbar: React.FC = () => {
               <>
                 <Link
                   to="/register"
-                  className={`
-                    px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-md
-                    ${!isScrolled
-                      ? "text-white border border-white hover:bg-white hover:text-cyan-600"
-                      : "text-cyan-600 border border-cyan-600 hover:bg-cyan-50"
-                    }`}
+                  className={`px-5 py-2 rounded-md text-sm font-semibold border transition-all duration-300 ${
+                    isScrolled
+                      ? "text-cyan-600 border-cyan-600 hover:bg-cyan-50"
+                      : "text-white border-white hover:bg-white hover:text-cyan-600"
+                  }`}
                 >
                   Register
                 </Link>
                 <Link
                   to="/login"
-                  className={`
-                    px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-md
-                    ${!isScrolled
-                      ? "text-cyan-800 bg-white hover:bg-cyan-100"
-                      : "text-white bg-cyan-600 hover:bg-cyan-700"
-                    }`}
+                  className={`px-5 py-2 rounded-md text-sm font-semibold shadow-md transition-all duration-300 ${
+                    isScrolled
+                      ? "text-white bg-cyan-600 hover:bg-cyan-700"
+                      : "text-cyan-700 bg-white hover:bg-cyan-100"
+                  }`}
                 >
                   Login
                 </Link>
@@ -146,65 +151,63 @@ const Navbar: React.FC = () => {
             )}
           </div>
 
-          {/* Tombol Menu (Mobile) */}
+          {/* Tombol Mobile Menu */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`md:hidden focus:outline-none z-[100] transition-transform duration-300 hover:scale-110 ${isScrolled ? "text-cyan-600" : "text-white"
-              }`}
+            className={`md:hidden focus:outline-none transition-transform duration-300 hover:scale-110 ${
+              isScrolled ? "text-cyan-700" : "text-white"
+            }`}
           >
             {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
       </nav>
 
-      {/* Menu Mobile Full Screen Overlay */}
+      {/* MOBILE MENU OVERLAY */}
       <div
-        className={`fixed top-0 left-0 w-full h-full bg-cyan-700/95 backdrop-blur-md z-[60] transition-all duration-500 ease-in-out md:hidden ${isMenuOpen
-          ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-full pointer-events-none"
-          }`}
+        className={`fixed inset-0 bg-cyan-700/95 backdrop-blur-md z-40 transition-all duration-500 transform ${
+          isMenuOpen
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 -translate-y-full pointer-events-none"
+        }`}
       >
-        <div className="p-4 pt-20 flex flex-col items-center justify-start h-full">
+        <div className="flex flex-col items-center justify-center gap-6 h-full text-white text-lg font-semibold">
           {navItems.map((item) => (
             <Link
               key={item.name}
               to={item.path}
-              className="w-full text-center py-4 text-xl text-white font-medium hover:bg-cyan-600/50 transition-colors duration-300 border-b border-cyan-500/50"
+              className="hover:text-cyan-200 transition-colors duration-200"
               onClick={() => setIsMenuOpen(false)}
             >
               {item.name}
             </Link>
           ))}
 
-          <div className="flex flex-col gap-4 w-full mt-10 p-4 border-t border-cyan-500/50">
+          <div className="flex flex-col w-3/4 gap-3 mt-10">
             {isLoggedIn ? (
-              <div className="w-full text-center bg-white rounded-xl shadow-lg p-4">
-                <div className="flex items-center justify-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center text-white font-bold text-lg shadow-md">
-                    {user?.full_name?.charAt(0)?.toUpperCase() || 'U'}
-                  </div>
-                  <span className="font-bold text-cyan-700 text-lg">{user?.full_name}</span>
+              <>
+                <div className="bg-white text-cyan-700 font-bold rounded-md p-3 text-center">
+                  {user?.full_name}
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full mt-4 flex items-center justify-center space-x-2 bg-red-50 text-red-600 font-medium px-3 py-2 rounded-lg hover:bg-red-100 transition-all duration-300"
+                  className="bg-red-100 text-red-600 font-semibold rounded-md p-3 hover:bg-red-200 transition-colors"
                 >
-                  <LogOut size={20} />
-                  <span>Logout</span>
+                  Logout
                 </button>
-              </div>
+              </>
             ) : (
               <>
                 <Link
                   to="/login"
-                  className="w-full text-center bg-white text-cyan-600 font-bold px-5 py-3 rounded-full shadow-lg hover:bg-cyan-500 hover:text-white transition-all duration-300"
+                  className="bg-white text-cyan-600 font-bold text-center rounded-md p-3 hover:bg-cyan-50 transition-all"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="w-full text-center border-2 border-white text-white font-bold px-5 py-3 rounded-full shadow-lg hover:bg-white hover:text-cyan-600 transition-all duration-300"
+                  className="border-2 border-white text-white font-bold text-center rounded-md p-3 hover:bg-white hover:text-cyan-700 transition-all"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Register
