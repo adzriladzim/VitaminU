@@ -306,23 +306,28 @@ export default function LabSection() {
                 <CardFooter className="p-6 pt-0">
                   {showBookButton && (
                     <button
-                      onClick={() => handleBookClick(room.id, room.name)}
-                      disabled={!isLoggedIn || isBookingThisRoom}
+                      // onClick={() => handleBookClick(room.id, room.name)}
+                      onClick={() => {
+                        if (!isLoggedIn) {
+                          alert("Anda harus login untuk memesan ruangan."); // Opsional: Beri tahu pengguna
+                          navigate("/login");
+                        } else {
+                          handleBookClick(room.id, room.name);
+                        }
+                      }}
+                      disabled={isBookingThisRoom}
                       className={`w-full py-3.5 rounded-xl font-bold text-base transition-all duration-300 transform
-                                                ${
-                                                  isBookingThisRoom
-                                                    ? "bg-gray-400 text-gray-700 cursor-wait"
-                                                    : isLoggedIn
-                                                    ? "bg-cyan-600 text-white hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 hover:scale-105 active:scale-95"
-                                                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                                                }`}
+                        ${
+                          isBookingThisRoom
+                            ? "bg-gray-400 text-gray-700 cursor-wait"
+                            : "bg-cyan-600 text-white hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 hover:scale-105 active:scale-95"
+                        }`}
                     >
                       {isBookingThisRoom ? (
                         <span className="flex items-center justify-center gap-2">
-                          {/* Anda bisa tambahkan ikon loading di sini jika mau */}
                           Booking...
                         </span>
-                      ) : isLoggedIn ? (
+                      ) : (
                         <span className="flex items-center justify-center gap-2">
                           <svg
                             className="w-5 h-5"
@@ -339,34 +344,9 @@ export default function LabSection() {
                           </svg>
                           Book Now
                         </span>
-                      ) : (
-                        <span className="flex items-center justify-center gap-2">
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                            />
-                          </svg>
-                          Login to Book
-                        </span>
                       )}
                     </button>
                   )}
-
-                  {/* {!showActionButton && (
-                    <div className="w-full py-3.5 text-center text-gray-500 text-sm font-medium">
-                      {lab.status === "Booked"
-                        ? "⏳ Menunggu persetujuan admin"
-                        : "🔒 Sedang digunakan"}
-                    </div>
-                  )} */}
                   {!showBookButton && (
                     <div className="w-full py-3.5 text-center text-gray-500 text-sm font-medium">
                       {actionText || `Status: ${room.status}`}
@@ -380,19 +360,6 @@ export default function LabSection() {
             );
           })}
         </div>
-
-        {/* Empty State */}
-        {/* {filteredLabs.length === 0 && (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-2xl font-semibold text-gray-700 mb-2">
-              Tidak ada lab ditemukan
-            </h3>
-            <p className="text-gray-500">
-              Coba filter lain atau kembali ke "All"
-            </p>
-          </div>
-        )} */}
         {filteredRooms.length === 0 && rooms.length > 0 && (
           <div className="text-center py-20">
             <div className="text-6xl mb-4">🔍</div>

@@ -20,7 +20,6 @@ class Booking(Base):
     
     # Foreign Keys dan Relationships
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    room_id = Column(UUID(as_uuid=True), ForeignKey("rooms.id"), nullable=False)
-    
+    room_id = Column(UUID(as_uuid=True), ForeignKey("rooms.id", ondelete="CASCADE"), nullable=False)
     owner = relationship("User")
-    room = relationship("Room")
+    room = relationship("Room", back_populates="bookings")

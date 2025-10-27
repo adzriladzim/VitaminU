@@ -72,7 +72,7 @@ def create_new_room(
 @router.get("/", response_model=List[schemas.RoomResponse])
 def get_all_rooms(
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(dependencies.get_current_user)
+    # current_user: models.User = Depends(dependencies.get_current_user)
 ):
     rooms = repository.rooms.get_all_rooms(db)
     return rooms

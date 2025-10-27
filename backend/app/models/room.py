@@ -18,3 +18,4 @@ class Room(Base):
     description = Column(Text, nullable=True)
     location = Column(String(255), nullable=False)
     image_url = Column(String(255), nullable=True)
+    bookings = relationship("Booking", back_populates="room", cascade="all, delete-orphan")
