@@ -25,7 +25,7 @@ export default function LabSection() {
 
   // State dari 1e3ed98... (disesuaikan)
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [selectedLabId, setSelectedLabId] = useState<number | null>(null);
+  const [selectedLabId, setSelectedLabId] = useState<string | null>(null);
   const [selectedLabName, setSelectedLabName] = useState<string>("");
 
   // --- Hooks Gabungan ---
@@ -82,18 +82,13 @@ export default function LabSection() {
       return;
     }
 
-    setSelectedLabId(parseInt(roomId, 10));
+    setSelectedLabId(roomId);
     setSelectedLabName(roomName);
     setIsBookingModalOpen(true);
   };
 
-  /**
-   * Handler untuk submit dari DALAM MODAL.
-   * Menggunakan logika API call dari HEAD.
-   * Menggantikan handleBookWithTime dari 1e3ed98...
-   */
   const handleBookSubmit = async (
-    classId: number,
+    classId: string,
     startTime: string,
     endTime: string,
     className: string
@@ -101,10 +96,17 @@ export default function LabSection() {
     setError(null); // Clear previous errors
 
     try {
+      const startDate = new Date(startTime);
+      const endDate = new Date(endTime);
+
+      // 2. Konversi objek Date ke string ISO 8601 (format UTC 'Z')
+      //    Metode .toISOString() selalu mengembalikan UTC
+      const startTimeISO = startDate.toISOString();
+      const endTimeISO = endDate.toISOString();
       const bookingPayload: BookingCreatePayload = {
-        room_id: String(classId),
-        start_time: startTime,
-        end_time: endTime,
+        room_id: classId,
+        start_time: startTimeISO,
+        end_time: endTimeISO,
       };
 
       await apiClient.post("/bookings/", bookingPayload);
@@ -116,7 +118,7 @@ export default function LabSection() {
       // Optimistically update UI
       setRooms((prevRooms) =>
         prevRooms.map((room) =>
-          room.id === String(classId) ? { ...room, status: "pending" } : room
+          room.id === classId ? { ...room, status: "pending" } : room
         )
       );
 
@@ -329,8 +331,6 @@ export default function LabSection() {
                       </div>
                     </div>
                   </CardContent>
-
-                  {/* Footer with Action Button */}
                   <CardFooter className="p-6 pt-0">
                     {showBookButton && (
                       <button
@@ -348,7 +348,6 @@ export default function LabSection() {
                            bg-cyan-600 text-white hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/40 hover:scale-105 active:scale-95
                         `}
                       >
-                        {/* Teks statis "Book Now" dari HEAD (else branch) */}
                         <span className="flex items-center justify-center gap-2">
                           <svg
                             className="w-5 h-5"
@@ -373,8 +372,6 @@ export default function LabSection() {
                       </div>
                     )}
                   </CardFooter>
-
-                  {/* Decorative Corner */}
                   <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-cyan-400/10 to-transparent rounded-bl-full"></div>
                 </Card>
               );
@@ -393,14 +390,13 @@ export default function LabSection() {
           )}
         </div>
       </section>
-      {/* Booking Modal (dari 1e3ed98...) */}
       {isBookingModalOpen && selectedLabId && (
         <BookingModal
           isOpen={isBookingModalOpen}
           onClose={() => setIsBookingModalOpen(false)}
-          classId={selectedLabId} // Kirim string ID
+          classId={selectedLabId}
           className={selectedLabName}
-          onBook={handleBookSubmit} // Panggil handler submit baru
+          onBook={handleBookSubmit}
         />
       )}
     </>

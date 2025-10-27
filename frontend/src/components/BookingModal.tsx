@@ -9,9 +9,9 @@ import { X } from 'lucide-react';
 interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  classId: number;
+  classId: string;
   className: string;
-  onBook: (classId: number, startTime: string, endTime: string, className: string) => void;
+  onBook: (classId: string, startTime: string, endTime: string, className: string) => void;
 }
 
 // Fungsi bantu untuk memformat Date object kembali ke format datetime-local (YYYY-MM-DDThh:mm)

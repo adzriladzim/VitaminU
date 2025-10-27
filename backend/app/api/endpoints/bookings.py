@@ -1,14 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from datetime import date
-from typing import List, Optional
+from datetime import date, datetime, timezone
+from typing import List
 from backend.app import schemas, models
-from backend.app.api import dependencies
 from backend.app.repository import bookings as repository
-from backend.app.models import Booking, Room, User, BookingStatus
+from backend.app.api import dependencies
 from backend.app.core.database import get_db
-from backend.app.core import security
-from uuid import uuid4, UUID
+from uuid import UUID
 
 router = APIRouter(
     prefix="/bookings",
@@ -53,13 +51,42 @@ def update_a_booking_status(
     booking_id: UUID,
     booking_update: schemas.BookingUpdate,
     db: Session = Depends(get_db),
+    current_admin: models.User = Depends(dependencies.get_current_admin_user) # Kita punya admin di sini
+):
+    """
+    Endpoint untuk admin mengubah status booking (approve/reject/cancel).
+    """
+    if booking_update.status is None:
+         raise HTTPException(status_code=400, detail="New status must be provided")
+
+    updated_booking = repository.update_booking_status(
+        db,
+        booking_id=booking_id,
+        new_status=booking_update.status,
+        admin_id=current_admin.id 
+    )
+    if updated_booking is None:
+         raise HTTPException(status_code=404, detail="Booking not found or update failed")
+
+    return updated_booking
+
+@router.patch("/{booking_id}/finish", response_model=schemas.BookingResponse)
+def finish_booking_early(
+    booking_id: UUID,
+    db: Session = Depends(get_db),
     current_admin: models.User = Depends(dependencies.get_current_admin_user)
 ):
     """
-    Endpoint untuk admin mengubah status booking (approve/reject).
+    Endpoint untuk admin mengakhiri booking yang sedang berlangsung lebih awal.
     """
-    db_booking = repository.get_booking(db, booking_id=booking_id)
-    if not db_booking:
-        raise HTTPException(status_code=404, detail="Booking not found")
-        
-    return repository.update_booking_status(db, booking_id=booking_id, new_status=booking_update.status)
+    updated_booking = repository.finish_booking(
+        db,
+        booking_id=booking_id,
+        admin_id=current_admin.id
+    )
+    if not updated_booking:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Active approved booking not found or it may have already finished."
+        )
+    return updated_booking

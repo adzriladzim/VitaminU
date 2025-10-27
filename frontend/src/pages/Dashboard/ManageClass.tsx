@@ -39,7 +39,7 @@ export default function ManageClass() {
       try {
         // Ambil data ruangan dan booking secara paralel
         const [roomsRes, bookingsRes] = await Promise.all([
-          apiClient.get<Room[]>("/rooms/"), 
+          apiClient.get<Room[]>("/rooms/"),
           apiClient.get<Booking[]>("/bookings/"),
         ]);
         setRooms(roomsRes.data);
@@ -129,15 +129,62 @@ export default function ManageClass() {
   // Fungsi untuk menandai kelas selesai (mengubah status jadi Available)
   const handleMarkFinished = async (roomId: string) => {
     setError(null);
+    
+    const now = new Date();
+    const activeBooking = bookings.find(
+      (b) =>
+        b.room.id === roomId &&
+        b.status === "approved" &&
+        new Date(b.start_time) <= now &&
+        new Date(b.end_time) > now
+    );
+
+    if (!activeBooking) {
+      console.warn("No active booking found. Forcing status to 'available'.");
+      try {
+        await apiClient.put(`/rooms/${roomId}`, { status: "available" });
+        setRooms((prev) =>
+          prev.map((r) => (r.id === roomId ? { ...r, status: "available" } : r))
+        );
+        alert("Room status (manual) set to available.");
+      } catch (err: any) {
+        const msg =
+          err.response?.data?.detail || "Failed to mark room as finished.";
+        setError(msg);
+        alert(`Error: ${msg}`);
+      }
+      return;
+    }
+
+    // 2. Jika booking aktif ditemukan, panggil endpoint 'finish' yang benar
     try {
-      await apiClient.put(`/rooms/${roomId}`, { status: "available" });
+      // Panggil endpoint BARU untuk mengakhiri booking
+      await apiClient.patch(`/bookings/${activeBooking.id}/finish`);
+
+      // 3. Update state lokal SEMENTARA (Optimistic Update)
+      // Ubah status booking menjadi 'completed'
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.id === activeBooking.id
+            ? { ...b, status: "completed", end_time: new Date().toISOString() }
+            : b
+        )
+      );
+      // Ubah status room menjadi 'available'
       setRooms((prev) =>
         prev.map((r) => (r.id === roomId ? { ...r, status: "available" } : r))
       );
-      alert("Room marked as finished and available.");
+
+      alert("Booking has been marked as finished.");
+
+      // 4. (OPSIONAL, tapi lebih baik) Fetch ulang data untuk sinkronisasi penuh
+      // const roomsRes = await apiClient.get<Room[]>("/rooms/");
+      // setRooms(roomsRes.data);
+      // const bookingsRes = await apiClient.get<Booking[]>("/bookings/");
+      // setBookings(bookingsRes.data);
     } catch (err: any) {
       const msg =
-        err.response?.data?.detail || "Failed to mark room as finished.";
+        err.response?.data?.detail || "Failed to mark booking as finished.";
       setError(msg);
       alert(`Error: ${msg}`);
     }
@@ -154,7 +201,6 @@ export default function ManageClass() {
       try {
         // Panggil endpoint DELETE /rooms/{room_id}
         await apiClient.delete(`/rooms/${roomId}`);
-        // Hapus room dari state lokal
         setRooms((prev) => prev.filter((r) => r.id !== roomId));
         alert(`Room "${roomName}" deleted successfully!`);
       } catch (err: any) {
@@ -338,10 +384,6 @@ export default function ManageClass() {
           );
         })}
       </div>
-
-      {/* ============================== */}
-      {/* 📜 BAGIAN 3: USER BOOKING LOG (Dinamis) */}
-      {/* ============================== */}
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">
           User Booking Log
@@ -383,9 +425,9 @@ export default function ManageClass() {
                     (a, b) =>
                       new Date(b.start_time).getTime() -
                       new Date(a.start_time).getTime()
-                  ) // Urutkan terbaru dulu
+                  )
                   .map((booking) => {
-                    const timeZone = "Asia/Jakarta"; // Zona Waktu Indonesia Barat
+                    const timeZone = "Asia/Jakarta";
                     let startTimeWibFormatted = "Invalid Date";
                     let endTimeWibFormatted = "Invalid Date";
 
@@ -395,10 +437,7 @@ export default function ManageClass() {
                       const endTimeUtc = new Date(booking.end_time);
 
                       // Konversi ke zona waktu WIB
-                      const startTimeWib = toZonedTime(
-                        startTimeUtc,
-                        timeZone
-                      );
+                      const startTimeWib = toZonedTime(startTimeUtc, timeZone);
                       const endTimeWib = toZonedTime(endTimeUtc, timeZone);
 
                       // Format waktu WIB
@@ -448,6 +487,8 @@ export default function ManageClass() {
                                 ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                                 : booking.status === "canceled"
                                 ? "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+                                : booking.status === "completed"
+                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" // Contoh warna biru
                                 : ""
                             }`}
                           >

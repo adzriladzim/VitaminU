@@ -22,6 +22,9 @@ def get_all_rooms(db: Session) -> List[dict] :
         if room.status == models.RoomStatus.maintenance:
             calculated_status = models.RoomStatus.maintenance
         else:
+            now_utc = datetime.now(timezone.utc)
+            print(f"Checking Room ID: {room.id}, Current Time UTC: {now_utc}") # Log waktu saat ini            
+            
             # Cek booking 'approved' yang sedang berlangsung (in_use)
             ongoing_booking = db.query(models.Booking).filter(
                 models.Booking.room_id == room.id,
@@ -31,7 +34,9 @@ def get_all_rooms(db: Session) -> List[dict] :
             ).order_by(models.Booking.start_time.asc()).first()
 
             if ongoing_booking:
-                calculated_status = models.RoomStatus.in_use
+                print(f" --> Found ongoing booking ID: {ongoing_booking.id}")
+                print(f"     Start: {ongoing_booking.start_time}, End: {ongoing_booking.end_time}")
+                calculated_status = models.RoomStatus.in_use  
             else:
                 # Cek booking 'pending'
                 pending_booking = db.query(models.Booking).filter(

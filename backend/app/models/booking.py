@@ -6,10 +6,11 @@ from sqlalchemy.dialects.postgresql import UUID
 from backend.app.core.database import Base
 
 class BookingStatus(str, enum.Enum):
-    pending = "pending"       # Permintaan baru, menunggu persetujuan admin
-    approved = "approved"     # Disetujui oleh admin (ini sama dengan konsep "booked")
-    rejected = "rejected"     # Ditolak oleh admin
-    canceled = "canceled"     # Dibatalkan oleh mahasiswa
+    pending = "pending"       
+    approved = "approved"
+    rejected = "rejected"
+    canceled = "canceled"
+    completed = "completed"
 
 class Booking(Base):
     __tablename__ = "bookings"
@@ -21,5 +22,7 @@ class Booking(Base):
     # Foreign Keys dan Relationships
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     room_id = Column(UUID(as_uuid=True), ForeignKey("rooms.id", ondelete="CASCADE"), nullable=False)
-    owner = relationship("User")
+    updated_by_admin_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     room = relationship("Room", back_populates="bookings")
+    owner = relationship("User", foreign_keys=[user_id], back_populates="bookings_made")
+    updated_by_admin = relationship("User", foreign_keys=[updated_by_admin_id], back_populates="bookings_updated")
