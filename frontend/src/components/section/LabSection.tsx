@@ -7,12 +7,16 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useClassData } from '@/context/ClassDataContext';
+import BookingModal from '@/components/BookingModal';
 
 const FILTERS = ['all', 'available', 'in use', 'booked'] as const;
 type FilterType = typeof FILTERS[number];
 
 export default function LabSection() {
   const [filter, setFilter] = useState<FilterType>('all');
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [selectedLabId, setSelectedLabId] = useState<number | null>(null);
+  const [selectedLabName, setSelectedLabName] = useState<string>('');
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const { classes } = useClassData();
@@ -30,7 +34,7 @@ export default function LabSection() {
       });
 
   const { user } = useAuth(); // Get the current user
-  const { bookClass } = useClassData();
+  const { bookClass, bookClassWithTime } = useClassData();
 
   const handleBookClick = (labId: number, labName: string) => {
     if (!isLoggedIn) {
@@ -47,15 +51,28 @@ export default function LabSection() {
         return;
       }
 
-      // Use the context function to book the class with the actual user's name
-      const userName = user?.full_name || user?.email || "Unknown User";
-      bookClass(labId, userName);
+      // Open the booking modal instead of booking directly
+      setSelectedLabId(labId);
+      setSelectedLabName(labName);
+      setIsBookingModalOpen(true);
     } else {
       alert(`Kelas dengan ID ${labId} tidak ditemukan.`);
     }
   };
 
+  const handleBookWithTime = (classId: number, startTime: string, endTime: string, className: string) => {
+    if (!isLoggedIn) {
+      alert('Anda harus login terlebih dahulu untuk melakukan pemesanan.');
+      navigate('/login');
+      return;
+    }
+
+    const userName = user?.full_name || user?.email || "Unknown User";
+    bookClassWithTime(classId, userName, startTime, endTime, className);
+  };
+
   return (
+    <>
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 px-4 py-12" id='LabSection'>
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
@@ -197,7 +214,7 @@ export default function LabSection() {
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
-                          Book Now
+                          Book class
                         </span>
                       ) : (
                         <span className="flex items-center justify-center gap-2">
@@ -238,5 +255,17 @@ export default function LabSection() {
         )}
       </div>
     </section>
+
+    {/* Booking Modal */}
+    {isBookingModalOpen && selectedLabId && (
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        classId={selectedLabId}
+        className={selectedLabName}
+        onBook={handleBookWithTime}
+      />
+    )}
+    </>
   );
 }
