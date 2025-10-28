@@ -21,7 +21,8 @@ import { format } from "date-fns";
 import { useAuth } from "@/hooks/useAuth";
 import { toZonedTime, format as formatTz } from "date-fns-tz";
 
-type ClassStatus = "available" | "maintenance";
+// TIPE DIUBAH: MENCAKUP SEMUA STATUS PERMINTAAN ADMIN
+type ClassStatus = "available" | "in_use" | "booked";
 
 export default function ManageClass() {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -29,8 +30,12 @@ export default function ManageClass() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null); // ID sekarang UUID (string)
+  // STATUS DEFAULT DIUBAH: Menggunakan 'available'
   const [currentStatus, setCurrentStatus] = useState<ClassStatus>("available");
   const { user } = useAuth();
+
+  // Timezone untuk log
+  const timeZone = "Asia/Jakarta";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,11 +65,10 @@ export default function ManageClass() {
       await apiClient.put(`/bookings/${bookingId}/status`, {
         status: "approved",
       });
-      // Update state booking lokal atau fetch ulang data
+      // Update state booking lokal
       setBookings((prev) =>
         prev.map((b) => (b.id === bookingId ? { ...b, status: "approved" } : b))
       );
-      // Mungkin perlu fetch ulang rooms juga jika status room berubah jadi 'booked'/'in_use'
       alert("Booking approved successfully!");
       // Reload data rooms untuk update status dinamis
       const roomsRes = await apiClient.get<Room[]>("/rooms/");
@@ -86,7 +90,7 @@ export default function ManageClass() {
         prev.map((b) => (b.id === bookingId ? { ...b, status: "rejected" } : b))
       );
       alert("Booking rejected.");
-      // Reload data rooms mungkin diperlukan jika status room bergantung pada pending
+      // Reload data rooms
       const roomsRes = await apiClient.get<Room[]>("/rooms/");
       setRooms(roomsRes.data);
     } catch (err: any) {
@@ -99,9 +103,11 @@ export default function ManageClass() {
   // Fungsi untuk memulai edit status ruangan
   const handleEditClick = (room: Room) => {
     setEditingId(room.id);
-    setCurrentStatus(
-      room.status === "maintenance" ? "maintenance" : "available"
-    );
+    // Saat edit, set default-nya ke 'available' atau status ruangan saat ini (jika ada di ClassStatus)
+    const initialStatus: ClassStatus = (room.status === "available" || room.status === "in_use" || room.status === "booked")
+        ? room.status as ClassStatus
+        : "available";
+    setCurrentStatus(initialStatus);
   };
   const handleCancel = () => {
     setEditingId(null);
@@ -111,9 +117,9 @@ export default function ManageClass() {
   const handleSaveStatus = async (roomId: string) => {
     setError(null);
     try {
-      // Panggil endpoint PUT /rooms/{room_id}
+      // Panggil endpoint PUT /rooms/{room_id} dengan status yang dipilih
       await apiClient.put(`/rooms/${roomId}`, { status: currentStatus });
-      // Update state rooms lokal atau fetch ulang
+      // Update state rooms lokal
       setRooms((prev) =>
         prev.map((r) => (r.id === roomId ? { ...r, status: currentStatus } : r))
       );
@@ -131,6 +137,7 @@ export default function ManageClass() {
     setError(null);
 
     const now = new Date();
+    // Cari booking approved yang sedang berjalan
     const activeBooking = bookings.find(
       (b) =>
         b.room.id === roomId &&
@@ -140,7 +147,7 @@ export default function ManageClass() {
     );
 
     if (!activeBooking) {
-      console.warn("No active booking found. Forcing status to 'available'.");
+      console.warn("No active booking found. Forcing room status to 'available' manually.");
       try {
         await apiClient.put(`/rooms/${roomId}`, { status: "available" });
         setRooms((prev) =>
@@ -160,8 +167,7 @@ export default function ManageClass() {
       // Panggil endpoint BARU untuk mengakhiri booking
       await apiClient.patch(`/bookings/${activeBooking.id}/finish`);
 
-      // 3. Update state lokal SEMENTARA (Optimistic Update)
-      // Ubah status booking menjadi 'completed'
+      // Update state lokal (Optimistic Update)
       setBookings((prev) =>
         prev.map((b) =>
           b.id === activeBooking.id
@@ -175,7 +181,6 @@ export default function ManageClass() {
       );
 
       alert("Booking has been marked as finished.");
-
     } catch (err: any) {
       const msg =
         err.response?.data?.detail || "Failed to mark booking as finished.";
@@ -216,12 +221,9 @@ export default function ManageClass() {
     return <div className="text-red-600">Error: {error}</div>;
 
   // --- Cari Booking Pending untuk Ditampilkan ---
-  // Kita perlu data booking untuk menampilkan tombol Approve/Reject
   const pendingBookingsMap = new Map<string, Booking>();
   bookings.forEach((booking) => {
     if (booking.status === "pending") {
-      // Asumsi hanya satu pending booking per ruangan,
-      // jika bisa > 1, logikanya perlu disesuaikan
       pendingBookingsMap.set(booking.room.id, booking);
     }
   });
@@ -307,10 +309,11 @@ export default function ManageClass() {
                     <SelectTrigger className="w-full bg-white text-cyan-500">
                       <SelectValue placeholder="Select status..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-gray-800">
-                      {/* Opsi hanya yang bisa di-set admin */}
+                    <SelectContent className="bg-white border-gray-300">
+                      {/* OPSI YANG DIMINTA */}
                       <SelectItem className="bg-white hover:bg-gray-400" value="available">Available</SelectItem>
-                      <SelectItem className="bg-white hover:bg-gray-400" value="maintenance">Maintenance</SelectItem>
+                      <SelectItem className="bg-white hover:bg-gray-400" value="in_use">In Use</SelectItem>
+                      <SelectItem className="bg-white hover:bg-gray-400" value="booked">Booked</SelectItem>
                     </SelectContent>
                   </Select>
                   <div className="space-x-2">
@@ -337,26 +340,31 @@ export default function ManageClass() {
                   <div className="flex flex-wrap gap-2 items-center">
                     {/* Tombol Approve/Reject hanya muncul jika ADA booking pending */}
                     {pendingBooking && (
-                      <>
-                        <button
-                          // Gunakan ID dari objek pendingBooking
-                          onClick={() => handleApprove(pendingBooking.id)}
-                          className="bg-sky-500 text-white px-3 py-1 rounded hover:bg-sky-600 text-xs" // Kecilkan tombol
-                        >
-                          Approve Request
-                        </button>
-                        <button
-                          onClick={() => handleReject(pendingBooking.id)}
-                          className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-xs" // Kecilkan tombol
-                        >
-                          Reject
-                        </button>
-                      </>
+                      <div className="p-2 border border-blue-200 rounded-md bg-blue-50">
+                        <p className="text-xs font-semibold text-blue-700 mb-1">
+                          Booking Pending from: {pendingBooking.owner?.full_name || pendingBooking.owner?.email || "N/A"}
+                        </p>
+                        <div className="space-x-2">
+                            <button
+                                // Gunakan ID dari objek pendingBooking
+                                onClick={() => handleApprove(pendingBooking.id)}
+                                className="bg-sky-500 text-white px-3 py-1 rounded hover:bg-sky-600 text-xs" // Kecilkan tombol
+                            >
+                                Approve Request
+                            </button>
+                            <button
+                                onClick={() => handleReject(pendingBooking.id)}
+                                className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-xs" // Kecilkan tombol
+                            >
+                                Reject
+                            </button>
+                        </div>
+                      </div>
                     )}
                     {!pendingBooking && (
                       <>
                         <button
-                          // Gunakan objek 'room' untuk handleEditClick
+                          // Tombol Edit Status Manual
                           onClick={() => handleEditClick(room)}
                           className="bg-teal-500 text-white px-3 py-1 rounded hover:bg-teal-600 text-xs" // Kecilkan tombol
                         >
@@ -392,10 +400,10 @@ export default function ManageClass() {
                 <TableHead className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
                   Class Name
                 </TableHead>
-                <TableHead className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <TableHead className="px-4 py-3 text-left text-xs font-medium text-gray-600  uppercase tracking-wider">
                   Start Time (WIB)
                 </TableHead>
-                <TableHead className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <TableHead className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                   End Time (WIB)
                 </TableHead>
                 <TableHead className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
@@ -408,7 +416,7 @@ export default function ManageClass() {
                 <TableRow>
                   <TableCell
                     colSpan={5}
-                    className="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400"
+                    className="px-4 py-4 text-center text-sm text-gray-500 "
                   >
                     No booking logs found.
                   </TableCell>
@@ -421,7 +429,6 @@ export default function ManageClass() {
                       new Date(a.start_time).getTime()
                   )
                   .map((booking) => {
-                    const timeZone = "Asia/Jakarta";
                     let startTimeWibFormatted = "Invalid Date";
                     let endTimeWibFormatted = "Invalid Date";
 
@@ -437,7 +444,7 @@ export default function ManageClass() {
                       // Format waktu WIB
                       startTimeWibFormatted = formatTz(startTimeWib, "Pp", {
                         timeZone,
-                      }); // 'Pp' = Tanggal pendek + Waktu panjang
+                      });
                       endTimeWibFormatted = formatTz(endTimeWib, "Pp", {
                         timeZone,
                       });
@@ -452,7 +459,7 @@ export default function ManageClass() {
                     return (
                       <TableRow
                         key={booking.id}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                        className="hover:bg-gray-100"
                       >
                         {/* Asumsi 'owner' dan 'room' ada di data booking dari API */}
                         <TableCell className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
@@ -460,14 +467,15 @@ export default function ManageClass() {
                             booking.owner?.email ||
                             "N/A"}
                         </TableCell>
-                        <TableCell className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                        <TableCell className="px-4 py-3 text-sm text-gray-900 ">
                           {booking.room?.name || "N/A"}
                         </TableCell>
-                        <TableCell className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                          {format(new Date(booking.start_time), "Pp")}
+                        {/* MENGGUNAKAN formatTz untuk WIB yang konsisten */}
+                        <TableCell className="px-4 py-3 text-sm text-gray-900 ">
+                          {startTimeWibFormatted}
                         </TableCell>
-                        <TableCell className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                          {format(new Date(booking.end_time), "Pp")}
+                        <TableCell className="px-4 py-3 text-sm text-gray-900 ">
+                          {endTimeWibFormatted}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-sm font-medium">
                           {/* Beri warna status */}
