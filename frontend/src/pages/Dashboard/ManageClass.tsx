@@ -129,7 +129,7 @@ export default function ManageClass() {
   // Fungsi untuk menandai kelas selesai (mengubah status jadi Available)
   const handleMarkFinished = async (roomId: string) => {
     setError(null);
-    
+
     const now = new Date();
     const activeBooking = bookings.find(
       (b) =>
@@ -156,7 +156,6 @@ export default function ManageClass() {
       return;
     }
 
-    // 2. Jika booking aktif ditemukan, panggil endpoint 'finish' yang benar
     try {
       // Panggil endpoint BARU untuk mengakhiri booking
       await apiClient.patch(`/bookings/${activeBooking.id}/finish`);
@@ -177,11 +176,6 @@ export default function ManageClass() {
 
       alert("Booking has been marked as finished.");
 
-      // 4. (OPSIONAL, tapi lebih baik) Fetch ulang data untuk sinkronisasi penuh
-      // const roomsRes = await apiClient.get<Room[]>("/rooms/");
-      // setRooms(roomsRes.data);
-      // const bookingsRes = await apiClient.get<Booking[]>("/bookings/");
-      // setBookings(bookingsRes.data);
     } catch (err: any) {
       const msg =
         err.response?.data?.detail || "Failed to mark booking as finished.";
@@ -287,7 +281,7 @@ export default function ManageClass() {
       {/* ============================== */}
       {/* 📦 BAGIAN 2: SEMUA KELAS (ALL CLASSES) */}
       {/* ============================== */}
-      <h2 className="text-2xl font-bold mb-4 text-teal-700">
+      <h2 className="text-2xl font-bold mb-4 text-teal-700 border-none">
         All Class Status
       </h2>
       <div className="grid md:grid-cols-2 gap-4 mb-8">
@@ -296,7 +290,7 @@ export default function ManageClass() {
           return (
             <div
               key={room.id}
-              className="border rounded-lg p-4 shadow hover:shadow-lg transition-shadow duration-300"
+              className="border rounded-lg p-4 shadow hover:shadow-lg transition-shadow duration-300 border-gray-200"
             >
               <h2 className="font-semibold text-lg mb-2">{room.name}</h2>
 
@@ -310,13 +304,13 @@ export default function ManageClass() {
                       setCurrentStatus(value as ClassStatus)
                     }
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full bg-white text-cyan-500">
                       <SelectValue placeholder="Select status..." />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white dark:bg-gray-800">
                       {/* Opsi hanya yang bisa di-set admin */}
-                      <SelectItem value="available">Available</SelectItem>
-                      <SelectItem value="maintenance">Maintenance</SelectItem>
+                      <SelectItem className="bg-white hover:bg-gray-400" value="available">Available</SelectItem>
+                      <SelectItem className="bg-white hover:bg-gray-400" value="maintenance">Maintenance</SelectItem>
                     </SelectContent>
                   </Select>
                   <div className="space-x-2">

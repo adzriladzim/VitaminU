@@ -167,7 +167,7 @@ export default function Login() {
           </Button>
 
           {/* Tombol "Continue with Google" */}
-          <Button
+          {/* <Button
             type="button"
             className="w-full border border-gray-300 text-gray-700 font-semibold bg-transparent hover:bg-gray-100"
           >
@@ -197,7 +197,7 @@ export default function Login() {
               ></path>
             </svg>
             Continue with Google
-          </Button>
+          </Button> */}
 
           {/* Register Link */}
           <div className="pt-2 text-center text-sm">

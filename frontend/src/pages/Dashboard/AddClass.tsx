@@ -244,7 +244,7 @@ export default function AddClass() {
           <SelectTrigger className="w-full text-blue-500">
             <SelectValue placeholder="Select status" />
           </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-gray-800">
+          <SelectContent className="bg-white">
             <SelectItem
               className="hover:bg-cyan-400 hover:text-white"
               value="available"
